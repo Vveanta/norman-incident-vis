@@ -18,6 +18,9 @@ openmeteo-requests = "*"
 requests-cache = "*"
 retry-requests = "*"
 numpy = "*"
+flask = "*"
+flask-wtf = "*"
+waitress = "*"
 
 [dev-packages]
 
