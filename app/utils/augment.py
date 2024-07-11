@@ -8,6 +8,7 @@ from .side import calculate_street_position
 from .rank import calculate_frequencies, assign_ranks
 from .emstat import check_emsstat
 
+
 def augment_data(db_path):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -43,7 +44,10 @@ def augment_data(db_path):
         incident['EMSSTAT'] = check_emsstat(incidents_dicts, index)
         augmented_incidents.append(incident)
         # print('check2')
-    csv_file_path = os.path.join('resources', 'augmented_data.csv')
+    resources_dir = os.path.join('app', 'resources')
+    if not os.path.exists(resources_dir):
+        os.makedirs(resources_dir)
+    csv_file_path = os.path.join(resources_dir, 'augmented_data.csv')
     with open(csv_file_path, 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
         writer.writerow(["Day of the Week", "Time of Day", "Weather", "Location Rank", "Side of Town", "Incident Rank", "Nature", "EMSSTAT"])

@@ -3,9 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Upload Files</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    Hello world
+    <h1>Upload NormanPD Incident Reports</h1>
+    <form action="{{ url_for('main.upload') }}" method="post" enctype="multipart/form-data">
+        {{ upload_form.hidden_tag() }}
+        <div>
+            {{ upload_form.file.label }}
+            {{ upload_form.file(class="form-control") }}
+        </div>
+        <div>
+            {{ upload_form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+    <hr>
+    <h2>Provide Feedback</h2>
+    <form action="{{ url_for('main.feedback') }}" method="post">
+        {{ feedback_form.hidden_tag() }}
+        <div>
+            {{ feedback_form.feedback.label }}
+            {{ feedback_form.feedback(class="form-control") }}
+        </div>
+        <div>
+            {{ feedback_form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
 </body>
 </html>

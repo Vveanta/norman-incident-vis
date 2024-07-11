@@ -35,7 +35,8 @@ __pycache__/
 
 #user_created_files
 output_txt.txt
-resources/normanpd.db
+resources
+app/resources
 
 #other cache files
 .cache.sqlite

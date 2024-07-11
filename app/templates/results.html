@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Results</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <pre>{{ data }}</pre>
+
+    <h1>Results</h1>
+
+    {% if failed_urls %}
+        <div class="error">
+            <h2>Failed URLs:</h2>
+            <ul>
+                {% for url in failed_urls %}
+                    <li>{{ url }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <div id="day-of-week-plot"></div>
+    <div id="time-of-day-plot"></div>
+    <div id="weather-plot"></div>
+    <div id="incident-rank-plot"></div>
+    <a href="{{ url_for('main.download_file', filename=csv_url.split('/')[-1]) }}">Download Augmented Data</a>
+
+    <script>
+        var data = {{ data|tojson }};
+        function aggregateData(data, key) {
+            const counts = {};
+            data.forEach(item => {
+                counts[item[key]] = (counts[item[key]] || 0) + 1;
+            });
+            return Object.keys(counts).map(k => ({ key: k, count: counts[k] }));
+        }
+
+        // Visualization for Day of the Week
+        var dayOfWeekData = aggregateData(data, 'Day of the Week');
+        var dayOfWeekPlotData = [{
+            x: dayOfWeekData.map(item => item.key),
+            y: dayOfWeekData.map(item => item.count),
+            type: 'bar'
+        }];
+        Plotly.newPlot('day-of-week-plot', dayOfWeekPlotData, { title: 'Incidents by Day of the Week' });
+
+        // Visualization for Time of Day
+        var timeOfDayData = aggregateData(data, 'Time of Day');
+        var timeOfDayPlotData = [{
+            x: timeOfDayData.map(item => item.key),
+            y: timeOfDayData.map(item => item.count),
+            type: 'bar'
+        }];
+        Plotly.newPlot('time-of-day-plot', timeOfDayPlotData, { title: 'Incidents by Time of Day' });
+
+        // Visualization for Weather
+        var weatherData = aggregateData(data, 'Weather');
+        var weatherPlotData = [{
+            x: weatherData.map(item => item.key),
+            y: weatherData.map(item => item.count),
+            type: 'bar'
+        }];
+        Plotly.newPlot('weather-plot', weatherPlotData, { title: 'Incidents by Weather' });
+
+        // Visualization for Incident Rank
+        var incidentRankData = aggregateData(data, 'Incident Rank');
+        var incidentRankPlotData = [{
+            x: incidentRankData.map(item => item.key),
+            y: incidentRankData.map(item => item.count),
+            type: 'bar'
+        }];
+        Plotly.newPlot('incident-rank-plot', incidentRankPlotData, { title: 'Incidents by Rank' });
+    </script>
+</body>
+</html>
