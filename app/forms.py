@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, FileField
+from wtforms import StringField, SubmitField, FileField, RadioField, MultipleFileField
 from wtforms.validators import DataRequired, URL
 
 class URLForm(FlaskForm):
@@ -7,7 +7,8 @@ class URLForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class UploadForm(FlaskForm):
-    file = FileField('Upload PDF File', validators=[DataRequired()])
+    file_type = RadioField('File Type', choices=[('csv', 'CSV'), ('pdf', 'PDF')], validators=[DataRequired()])
+    file = MultipleFileField('File', validators=[DataRequired()])
     submit = SubmitField('Upload')
 
 class FeedbackForm(FlaskForm):

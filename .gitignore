@@ -37,6 +37,7 @@ __pycache__/
 output_txt.txt
 resources
 app/resources
+docs/weathericons.json
 
 #other cache files
 .cache.sqlite

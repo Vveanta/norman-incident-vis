@@ -72,4 +72,6 @@ def extract_incidents(pdf_file_path):
             incidents.append(incident)
         else:
             i += 1  # Increment to avoid infinite loop
+    if not incidents:
+        raise ValueError("No valid incidents found in the PDF.")
     return incidents

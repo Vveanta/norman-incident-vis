@@ -11,4 +11,11 @@ def check_emsstat(incidents, current_index):
             current_incident['Location'] == next_incident['Location'] and
             next_incident['Incident ORI'].startswith('EMSSTAT')):
             return True
+    for previous_index in range(current_index - 1, max(current_index -3, -1),-1):
+        previous_incident = incidents[previous_index]
+        if (current_incident['Incident_time'] == previous_incident['Incident_time'] and
+            current_incident['Location'] == previous_incident['Location'] and
+            previous_incident['Incident ORI'].startswith('EMSSTAT')):
+            return True
+    
     return False

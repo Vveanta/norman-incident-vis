@@ -5,14 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Files</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script>
+        function toggleFileInput() {
+            var fileType = document.querySelector('input[name="file_type"]:checked').value;
+            var fileInputDiv = document.getElementById('file-input-div');
+            var fileInputLabel = document.getElementById('file-input-label');
+            var fileInput = document.getElementById('file-input');
+            if (fileType === 'csv') {
+                fileInputLabel.textContent = 'Upload CSV File:';
+                fileInput.accept = '.csv';
+            } else if (fileType === 'pdf') {
+                fileInputLabel.textContent = 'Upload PDF File:';
+                fileInput.accept = '.pdf';
+            }
+            fileInputDiv.style.display = 'block';
+        }
+    </script>
 </head>
 <body>
     <h1>Upload NormanPD Incident Reports</h1>
     <form action="{{ url_for('main.upload') }}" method="post" enctype="multipart/form-data">
         {{ upload_form.hidden_tag() }}
         <div>
-            {{ upload_form.file.label }}
-            {{ upload_form.file(class="form-control") }}
+            {{ upload_form.file_type.label }}
+            {{ upload_form.file_type(class="form-control", onchange="toggleFileInput()") }}
+        </div>
+        <div id="file-input-div" style="display: none;">
+            <label id="file-input-label" for="file-input">Upload File:</label>
+            {{ upload_form.file(class="form-control", id="file-input", multiple=True) }}
         </div>
         <div>
             {{ upload_form.submit(class="btn btn-primary") }}

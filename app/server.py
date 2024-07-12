@@ -25,6 +25,7 @@ def upload():
     form = UploadForm()
     if form.validate_on_submit():
         db_path = ensure_database_exists()
+        file_type = request.form['file_type']
         files = request.files.getlist('file')
         failed_urls = []
         for file in files:
@@ -32,11 +33,11 @@ def upload():
             file_path = os.path.join('/tmp', filename)
             file.save(file_path)
 
-            if filename.endswith('.csv'):
+            if file_type == 'csv' and filename.endswith('.csv'):
                 failed_urls.extend(process_csv(file_path, db_path))
-            elif filename.endswith('.pdf'):
-                pdf_filename = process_pdf(file_path, db_path)
-                if not pdf_filename:
+            elif file_type == 'pdf' and filename.endswith('.pdf'):
+                success = process_pdf(file_path, db_path)
+                if not success:
                     failed_urls.append(filename)
             else:
                 flash('Unsupported file type', category='error')
@@ -45,6 +46,7 @@ def upload():
         csv_file_path = augment_data(db_path)
         return redirect(url_for('main.results', csv_file_path=csv_file_path, failed_urls=urllib.parse.quote_plus(','.join(failed_urls))))
     return render_template('upload.html', form=form)
+
 
 def process_csv(file_path, db_path):
     urls = pd.read_csv(file_path, header=None)
@@ -55,8 +57,14 @@ def process_csv(file_path, db_path):
             logger.warning(f"Skipping URL: {url} due to fetch failure.")
             failed_urls.append(url)
             continue
-        incidents = extract_incidents(pdf_filename)
-        populate_db(db_path, incidents)
+
+        try:
+            incidents = extract_incidents(pdf_filename)
+            populate_db(db_path, incidents)
+        except ValueError as e:
+            logger.warning(f"Error extracting incidents from URL: {url} - {e}")
+            failed_urls.append(url)
+
     return failed_urls
 
 def fetch_pdf(url):
@@ -72,8 +80,16 @@ def fetch_pdf(url):
     return local_filename
 
 def process_pdf(pdf_filename, db_path):
-    incidents = extract_incidents(pdf_filename)
-    populate_db(db_path, incidents)
+    try:
+        incidents = extract_incidents(pdf_filename)
+        populate_db(db_path, incidents)
+        return True  # Return True if processing is successful
+    except ValueError as e:
+        logger.error(f"Error processing PDF {pdf_filename}: {e}")
+        return False  
+    except Exception as e:
+        logger.error(f"Error processing PDF {pdf_filename}: {e}")
+        return False  
 
 def ensure_database_exists():
     db_path = "resources/normanpd.db"

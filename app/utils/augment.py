@@ -50,13 +50,14 @@ def augment_data(db_path):
     csv_file_path = os.path.join(resources_dir, 'augmented_data.csv')
     with open(csv_file_path, 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
-        writer.writerow(["Day of the Week", "Time of Day", "Weather", "Location Rank", "Side of Town", "Incident Rank", "Nature", "EMSSTAT"])
+        writer.writerow(["Day of the Week", "Time of Day", "Weather", "Location Rank", "Location", "Side of Town", "Incident Rank", "Nature", "EMSSTAT"])
         for incident in augmented_incidents:
             writer.writerow([
                 incident['Day Of The Week'],
                 incident['Time Of Day'],
                 incident['Weather'],
                 incident['Location Rank'],
+                incident['Location'],
                 incident['Side of Town'],
                 incident['Nature Rank'],
                 incident['Nature'],
