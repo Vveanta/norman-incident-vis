@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback{% endblock %}
+
+{% block content %}
+<section class="feedback-section">
+    <div id="feedbackContainer" class="feedback-container">
+        <h1>Provide Your Feedback</h1>
+        <form id="feedbackForm" action="{{ url_for('main.feedback') }}" method="post">
+            {{ feedback_form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ feedback_form.name.label }}
+                {{ feedback_form.name(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                {{ feedback_form.email.label }}
+                {{ feedback_form.email(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                {{ feedback_form.user_type.label }}
+                <div class="user-type-group">
+                    {% for value, label in feedback_form.user_type.choices %}
+                    <label class="user-type-option">
+                        <input type="radio" name="user_type" value="{{ value }}">
+                        <span>{{ label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="deform-group">
+                <div class="star-widget">
+                    <div class="stars-container">
+                        <input name="rating" type="radio" id="rate-5" value="5">
+                        <label for="rate-5" class="fas fa-star"></label>
+                        <input name="rating" type="radio" id="rate-4" value="4">
+                        <label for="rate-4" class="fas fa-star"></label>
+                        <input name="rating" type="radio" id="rate-3" value="3">
+                        <label for="rate-3" class="fas fa-star"></label>
+                        <input name="rating" type="radio" id="rate-2" value="2">
+                        <label for="rate-2" class="fas fa-star"></label>
+                        <input name="rating" type="radio" id="rate-1" value="1">
+                        <label for="rate-1" class="fas fa-star"></label>
+
+                    </div>
+                    <header class="star-head"></header>
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ feedback_form.feedback.label }}
+                {{ feedback_form.feedback(class="form-control") }}
+            </div>
+
+            <div class="form-group form-btn">
+                <button type="submit" class="form-btn btn-primary">{{ feedback_form.submit.label.text }}</button>
+            </div>
+        </form>
+    </div>
+    <div id="thankYouMessage" class="thank-you-message" style="display: none;">
+        <h2>Thank you for your feedback!</h2>
+        <div id="feedbackResponse"></div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const stars = document.querySelectorAll('.star-widget input');
+        const header = document.querySelector('.star-head');
+
+        stars.forEach(star => {
+            star.addEventListener('change', () => {
+                switch(star.id) {
+                    case 'rate-1':
+                        header.textContent = "I just hate it. 😠";
+                        break;
+                    case 'rate-2':
+                        header.textContent = "I don't like it. 😞";
+                        break;
+                    case 'rate-3':
+                        header.textContent = "It is fine. 😐";
+                        break;
+                    case 'rate-4':
+                        header.textContent = "I like it. 😎";
+                        break;
+                    case 'rate-5':
+                        header.textContent = "I just love it. 😍";
+                        break;
+                }
+            });
+        });
+
+        const feedbackForm = document.getElementById('feedbackForm');
+        feedbackForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(feedbackForm);
+            fetch('{{ url_for("main.feedback") }}', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('feedbackContainer').style.display = 'none';
+                    document.getElementById('thankYouMessage').style.display = 'block';
+                } else {
+                    document.getElementById('thankYouMessage').style.display = 'block';
+                    document.getElementById('feedbackResponse').innerHTML = `
+                        <h3>Failed to send feedback. Here are the details:</h3>
+                        <pre>${JSON.stringify(data.feedback, null, 2)}</pre>
+                        <p>Error message: ${data.message}</p>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting your feedback. Please try again later.');
+            });
+        });
+    });
+</script>
+{% endblock %}

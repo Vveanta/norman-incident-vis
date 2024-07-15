@@ -1,0 +1,174 @@
+#intro::before,
+#intro::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 45%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: -2;
+    height: 100%;
+}
+
+#intro::before {
+    left: 0;
+    background-color: #F8F8F8; /* Replace with the URL of the blurred left-side image */
+    width: 54%; /* Adjust the blur intensity as needed */
+    z-index: -1;
+    opacity: 0.9;
+    box-shadow: 5px 0px 7px 15px #F8F8F8;
+}
+
+#intro::after {
+    right: 0;
+    background-image: url('../img/input_0.png'); /* Replace with the URL of the right-side image */
+}
+
+#intro {
+    position: relative;
+    width: 100%;
+    height: 50vh; /* You can adjust the height as needed */
+    z-index: 50;
+}
+
+.intro_container {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    height: 100%;
+    align-items: center;
+}
+
+.btn {
+    font-size: 1.2em;
+    padding: 10px 20px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 20px;
+}
+
+#git {
+    background-color: #898989;
+}
+
+#use {
+    background-color: black;
+}
+
+#git:hover {
+    background-color: blue;
+    opacity: .6;
+}
+
+#use:hover {
+    background-color: blue;
+    opacity: .6;
+}
+
+#head {
+    display: inline-block;
+    padding: 12px 20px 12px 20px;
+    margin: 20px 5px 10px 5px;
+    text-align: center;
+}
+
+#punch {
+    display: inline-block;
+    width: 50vw;
+    padding: 10px;
+    margin: 5px;
+    text-align: center;
+}
+
+#punch > p {
+    line-height: 1.6;
+    font-size: 1.2em;
+}
+
+#gallery {
+    padding: 50px;
+    margin-top: 30px;
+    text-align: center;
+}
+
+#gallery > h2 {
+    font-size: 3em;
+    margin-bottom: 30px;
+}
+
+.Featuresgal {
+    display: grid;
+    grid-gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    grid-template-rows: auto;
+    justify-content: space-between;
+    align-content: space-between;
+    justify-items: center;
+    padding-bottom: 70px;
+}
+
+.Feature {
+    display: inline-block;
+    text-align: center;
+    max-width: 300;
+    margin: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid #f5f5f5;
+    position: relative;
+    height: 300px; /* Initial height */
+    overflow: hidden; /* Hide the overflowing content */
+}
+
+.Feature img {
+    width: 150px;
+    height: 100px;
+    border-radius: 50%;
+    margin-top: 15px;
+}
+
+.Feature h3 {
+    font-size: 1.5em;
+    color: #203129;
+    margin-top: 15px;
+}
+
+.Feature p {
+    color: #203129;
+    margin: 10px;
+}
+
+.Feature .details {
+    display: none;
+    color: #203129;
+    font-size: 0.9em;
+    margin-top: 10px;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* transition: display 1s ease; */
+}
+
+.Feature:hover {
+    transform: scale(1.05); 
+    height: auto; 
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    height: auto; /* Allow height to adjust based on content */
+    max-height: 500px; /* Maximum height to prevent overflow */
+    padding-bottom: 20px;
+}
+
+.Feature:hover .details {
+    display: block;
+    position: static; /* Ensure it stays within the expanded feature */
+    padding-top: 10px;
+}

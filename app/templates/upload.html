@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Files{% endblock %}
+
+{% block content %}
+<section class="upload-section">
+    <div class="upload-container">
+        <h1>Upload NormanPD Incident Reports</h1>
+        <form action="{{ url_for('main.upload') }}" method="post" enctype="multipart/form-data">
+            {{ upload_form.hidden_tag() }}
+            <div class="form-group">
+                <label for="file_type">Choose File Type:</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="file_type" value="csv" onchange="toggleInputFields()">
+                        <span><i class="fas fa-file-csv"></i> CSV</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="file_type" value="pdf" onchange="toggleInputFields()">
+                        <span><i class="fas fa-file-pdf"></i> PDF</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="file_type" value="url" onchange="toggleInputFields()">
+                        <span><i class="fas fa-link"></i> URL</span>
+                    </label>
+                </div>
+            </div>
+            <div id="file-input-div" class="form-group" style="display: none;">
+                <label id="file-input-label" for="file-input">Upload File:</label>
+                {{ upload_form.file(class="form-control", id="file-input", multiple=True) }}
+            </div>
+            <div id="url-input-div" class="form-group" style="display: none;">
+                <label for="url-input">Enter URLs (one per line):</label>
+                <textarea name="urls" id="url-input" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                {{ upload_form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+       
+    </div>
+</section>
+
+<script>
+    function toggleInputFields() {
+        var fileType = document.querySelector('input[name="file_type"]:checked').value;
+        var fileInputDiv = document.getElementById('file-input-div');
+        var urlInputDiv = document.getElementById('url-input-div');
+        if (fileType === 'csv') {
+            fileInputDiv.style.display = 'block';
+            urlInputDiv.style.display = 'none';
+            fileInputDiv.querySelector('label').textContent = 'Upload CSV File:';
+            fileInputDiv.querySelector('input[type="file"]').accept = '.csv';
+        } else if (fileType === 'pdf') {
+            fileInputDiv.style.display = 'block';
+            urlInputDiv.style.display = 'none';
+            fileInputDiv.querySelector('label').textContent = 'Upload PDF File:';
+            fileInputDiv.querySelector('input[type="file"]').accept = '.pdf';
+        } else if (fileType === 'url') {
+            fileInputDiv.style.display = 'none';
+            urlInputDiv.style.display = 'block';
+        }
+    }
+</script>
+{% endblock %}

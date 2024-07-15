@@ -10,5 +10,7 @@ from app import create_app
 app = create_app()
 
 if __name__ == '__main__':
-    serve(app, host="0.0.0.0", port=5200)
+    # app.run(debug=True, host="0.0.0.0", port=5200)
+    app.run(debug=True, port=5200)  
+    # serve(app, host="0.0.0.0", port=5200)
     # app.run(debug=True)  

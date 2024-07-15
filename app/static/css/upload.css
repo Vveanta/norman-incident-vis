@@ -1,0 +1,264 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+/* Upload section styles */
+.upload-section {
+    padding: 50px;
+    text-align: center;
+}
+
+.upload-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.upload-container h1,
+.upload-container h2 {
+    margin-bottom: 20px;
+    color: #203129;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.radio-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    background-color: white;
+    margin: 20px;
+}
+
+.radio-option:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.radio-option input {
+    display: none;
+}
+
+.radio-option span {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.2em;
+}
+
+.radio-option input:checked + span {
+    background-color: #a2a2a2;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    /* padding: 20px; */
+}
+
+.radio-option i {
+    font-size: 2em;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+textarea.form-control {
+    height: 100px;
+}
+
+.btn {
+    padding: 10px 20px;
+    background-color: #28a745; /* Green background */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: #218838;
+}
+
+
+
+
+/* Feedback section styles */
+.feedback-section {
+    padding: 50px;
+    text-align: left;
+}
+
+.feedback-container {
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-container h1,
+.feedback-container h2 {
+    margin-bottom: 20px;
+    color: #203129;
+}
+
+
+.user-type-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 20px;
+}
+
+.user-type-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    background-color: white;
+    margin: 5px;
+}
+
+.user-type-option:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-type-option input {
+    margin-right: 10px; /* Add some space between the radio button and the label */
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.user-type-option input::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: transparent;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: background 0.2s;
+}
+
+.user-type-option input:checked::before {
+    background: #444444;
+}
+
+.user-type-option span {
+    font-size: 1.2em;
+}
+
+
+
+.star-widget {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stars-container {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
+
+.star-widget input {
+    display: none;
+}
+
+.star-widget label {
+    font-size: 40px;
+    color: #444;
+    padding: 10px;
+    transition: all 0.2s ease;
+}
+
+.star-widget input:not(:checked) ~ label:hover,
+.star-widget input:not(:checked) ~ label:hover ~ label {
+    color: #fd4;
+}
+
+.star-widget input:checked ~ label {
+    color: #fd4;
+}
+
+.star-widget input#rate-5:checked ~ label {
+    color: #fe7;
+    text-shadow: 0 0 20px #952;
+}
+
+.star-head {
+    width: 100%;
+    font-size: 20px;
+    color: #203129;
+    font-weight: 500;
+    margin: 20px 0 10px 0;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+textarea.form-control {
+    height: 100px;
+}
+
+.form-btn {
+    height: 45px;
+    width: 100%;
+    margin: 15px 0;
+}
+
+.form-btn button {
+    height: 100%;
+    width: 100%;
+    border: 1px solid #444;
+    outline: none;
+    background-color: #444444;
+    border-radius: 20px;
+    color: #FFF;
+    font-size: 17px;
+    font-weight: 500;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-btn button:hover {
+    background-color: green;
+}
+
+

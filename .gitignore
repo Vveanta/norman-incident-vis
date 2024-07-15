@@ -3,6 +3,9 @@
 .AppleDouble
 .LSOverride
 .eggs
+.env
+.flaskenv
+
 # Icon must end with two \r
 Icon
 
@@ -38,6 +41,7 @@ output_txt.txt
 resources
 app/resources
 docs/weathericons.json
+app/static/img/input_0.png 
 
 #other cache files
 .cache.sqlite

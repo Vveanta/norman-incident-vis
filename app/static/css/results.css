@@ -1,0 +1,18 @@
+/* results.css */
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+.weather-icons {
+    margin-top: 20px;
+}
+
+.weather-icon-item {
+    margin: 10px 0;
+}
+
+
+
+
+

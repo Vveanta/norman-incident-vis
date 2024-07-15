@@ -1,54 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Files</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script>
-        function toggleFileInput() {
-            var fileType = document.querySelector('input[name="file_type"]:checked').value;
-            var fileInputDiv = document.getElementById('file-input-div');
-            var fileInputLabel = document.getElementById('file-input-label');
-            var fileInput = document.getElementById('file-input');
-            if (fileType === 'csv') {
-                fileInputLabel.textContent = 'Upload CSV File:';
-                fileInput.accept = '.csv';
-            } else if (fileType === 'pdf') {
-                fileInputLabel.textContent = 'Upload PDF File:';
-                fileInput.accept = '.pdf';
-            }
-            fileInputDiv.style.display = 'block';
-        }
-    </script>
-</head>
-<body>
-    <h1>Upload NormanPD Incident Reports</h1>
-    <form action="{{ url_for('main.upload') }}" method="post" enctype="multipart/form-data">
-        {{ upload_form.hidden_tag() }}
-        <div>
-            {{ upload_form.file_type.label }}
-            {{ upload_form.file_type(class="form-control", onchange="toggleFileInput()") }}
+{% extends "base.html" %}
+
+{% block title %}Overview{% endblock %}
+
+{% block content %}
+<section id="intro">
+    <div class="intro_container">
+        <div id="head">
+            <a href="{{ url_for('main.upload') }}" id="use" class="btn">Use it now!</a>
+            <a href="https://www.rawgraphs.io/" id="git" class="btn">Github</a>
         </div>
-        <div id="file-input-div" style="display: none;">
-            <label id="file-input-label" for="file-input">Upload File:</label>
-            {{ upload_form.file(class="form-control", id="file-input", multiple=True) }}
+        <div id="punch">
+            <h1>Welcome to NormanPD Incident Data Visualizer</h1>
+            <p>This web application allows you to upload NormanPD incident reports in CSV or PDF format. It processes the data and provides various visualizations and analytics.</p>
         </div>
-        <div>
-            {{ upload_form.submit(class="btn btn-primary") }}
+    </div>
+</section>
+<section id="gallery">
+    <h2>Project Workflow</h2>
+    <div class="Featuresgal">
+        <div class="Feature" id="upload-feature">
+            <img src="{{ url_for('static', filename='img/input_0.png') }}" alt="Upload Data">
+            <h3>Upload data</h3>
+            <p>Upload incident reports in CSV or PDF format or directly the URLs.</p>
+            <div class="details">
+                <p>Supported formats: CSV, PDF.</p>
+                <p>Ensure the files follow the specified format.</p>
+            </div>
         </div>
-    </form>
-    <hr>
-    <h2>Provide Feedback</h2>
-    <form action="{{ url_for('main.feedback') }}" method="post">
-        {{ feedback_form.hidden_tag() }}
-        <div>
-            {{ feedback_form.feedback.label }}
-            {{ feedback_form.feedback(class="form-control") }}
+        <div class="Feature" id="process-feature">
+            <img src="{{ url_for('static', filename='img/input_0.png') }}" alt="Process Data">
+            <h3>Process and Augment</h3>
+            <p>Process URLs directly to fetch incident reports.</p>
+            <div class="details">
+                <p>Features in original data: Date/Time, Incident Number, Location, Nature, Incident ORI.</p>
+                <p>Features in augmented data: Day of the Week, Time of Day, Weather, Location Rank, Side of Town, Incident Rank, Nature, EMSSTAT.</p>
+            </div>
         </div>
-        <div>
-            {{ feedback_form.submit(class="btn btn-primary") }}
+        <div class="Feature" id="visualize-feature">
+            <img src="{{ url_for('static', filename='img/input_0.png') }}" alt="Visualizer">
+            <h3>Visualizer</h3>
+            <p>Visualize data with bar charts, line graphs, and pie charts.</p>
+            <div class="details">
+                <p>Bar charts: Incident counts by nature.</p>
+                <p>Line graphs: Incident trends over time.</p>
+                <p>Pie charts: Distribution of incidents by nature.</p>
+            </div>
         </div>
-    </form>
-</body>
-</html>
+        <div class="Feature" id="download-feature">
+            <img src="{{ url_for('static', filename='img/input_0.png') }}" alt="Download">
+            <h3>Download</h3>
+            <p>Download the augmented data.</p>
+            <div class="details">
+                <p>Available formats: CSV, JSON.</p>
+                <p>Includes all processed and augmented features.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

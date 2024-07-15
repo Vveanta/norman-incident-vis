@@ -1,4 +1,10 @@
 # CIS6930 Assignment 2 - Augmenting Data
+vedanshmaheshwari@Vveantas-Mac utils % export FLASK_APP=run
+flask run --port 5200
+
+
+
+
 - **Name:** Vedansh Mahehswari
 - **Email:** maheshwariv@ufl.edu
 

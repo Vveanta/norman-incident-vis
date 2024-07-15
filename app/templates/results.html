@@ -1,298 +1,289 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Results</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <style>
-        .error {
-            color: red;
-            font-weight: bold;
+<!-- results.html -->
+{% extends "base.html" %}
+
+{% block title %}Results{% endblock %}
+
+{% block content %}
+
+    
+<h1>Results</h1>
+<p><a href="{{ url_for('main.upload') }}">Upload Again</a></p>
+
+{% if failed_urls and failed_urls[0] %}
+<div class="error">
+    <h2>Failed URLs:</h2>
+    <ul>
+        {% for url in failed_urls %}
+        <li>{{ url }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div id="day-of-week-plot"></div>
+<div id="time-of-day-plot"></div>
+<div id="weather-plot"></div>
+<div class="weather-icons" id="weather-icons"></div>
+<p>If you want to know more about the WMO weather codes, visit the WMO code table site: <a href="https://www.nodc.noaa.gov/archive/arc0021/0002199/1.1/data/0-data/HTML/WMO-CODE/WMO4677.HTM">WMO CODE TABLE</a></p>
+<div id="incident-rank-plot"></div>
+<div id="top-locations-plot"></div> 
+<div id="side-of-town-plot"></div>
+<div id="emsstat-plot"></div>
+<a href="{{ url_for('main.download_file', filename=csv_url.split('/')[-1]) }}">Download Augmented Data</a>
+<p><a href="{{ url_for('main.upload') }}">Upload Again</a></p>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script>
+    var data = {{ data|tojson }};
+    function aggregateData(data, key) {
+        const counts = {};
+        data.forEach(item => {
+            counts[item[key]] = (counts[item[key]] || 0) + 1;
+        });
+        return Object.keys(counts).map(k => ({ key: k, count: counts[k] }));
+    }
+
+    var daysOfWeekLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    // Ensure all days of the week are present in the data
+    function ensureAllDays(data) {
+        var dayCounts = {};
+        daysOfWeekLabels.forEach((day, index) => {
+            dayCounts[index + 1] = 0; // Initialize all days with count 0
+        });
+        data.forEach(item => {
+            dayCounts[item.key] = item.count;
+        });
+        return Object.keys(dayCounts).map(k => ({ key: k, count: dayCounts[k] }));
+    }
+
+    // Visualization for Day of the Week
+    var dayOfWeekData = ensureAllDays(aggregateData(data, 'Day of the Week'));
+    var dayOfWeekPlotData = [{
+        x: daysOfWeekLabels,
+        y: dayOfWeekData.map(item => item.count),
+        type: 'bar'
+    }];
+    var dayOfWeekLayout = {
+        title: 'Incidents by Day of the Week',
+        xaxis: {
+            title: 'Day of the Week',
+            tickvals: daysOfWeekLabels,
+            ticktext: daysOfWeekLabels,
+            range: [0, 6]
+        },
+        bargap: 0.2  // Adjust the gap between bars
+    };
+    Plotly.newPlot('day-of-week-plot', dayOfWeekPlotData, dayOfWeekLayout);
+
+
+    // Visualization for Time of Day (Line Graph)
+    var timeOfDayData = aggregateData(data, 'Time of Day');
+    var timeOfDayPlotData = [{
+        x: timeOfDayData.map(item => item.key),
+        y: timeOfDayData.map(item => item.count),
+        type: 'scatter',  // Changed to 'scatter' for line graph
+        mode: 'lines+markers'
+    }];
+    var timeOfDayLayout = {
+        title: 'Incidents by Time of Day',
+        xaxis: {
+            title: 'Time of Day (Hour)',
+            dtick: 1  // Set x-axis tick interval to 1
+        },
+        yaxis: {
+            title: 'Count of Incidents'
         }
-        .weather-icons {
-            margin-top: 20px;
-        }
-        .weather-icon-item {
-            margin: 10px 0;
-        }
-    </style>
-</head>
-<body>
+    };
+    Plotly.newPlot('time-of-day-plot', timeOfDayPlotData, timeOfDayLayout);
 
-    <h1>Results</h1>
 
-    {% if failed_urls and failed_urls[0] %}
-        <div class="error">
-            <h2>Failed URLs:</h2>
-            <ul>
-                {% for url in failed_urls %}
-                    <li>{{ url }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
 
-    <div id="day-of-week-plot"></div>
-    <div id="time-of-day-plot"></div>
-    <div id="weather-plot"></div>
-    <div class="weather-icons" id="weather-icons"></div>
-    <p>If you want to know more about the WMO weather codes, visit the WMO code table site: <a href="https://www.nodc.noaa.gov/archive/arc0021/0002199/1.1/data/0-data/HTML/WMO-CODE/WMO4677.HTM">WMO CODE TABLE</a></p>
-    <div id="incident-rank-plot"></div>
-    <div id="top-locations-plot"></div> 
-    <div id="side-of-town-plot"></div>
-    <div id="emsstat-plot"></div>
-    <a href="{{ url_for('main.download_file', filename=csv_url.split('/')[-1]) }}">Download Augmented Data</a>
+    // Fetch weather icon data
+    fetch('https://gist.githubusercontent.com/stellasphere/9490c195ed2b53c707087c8c2db4ec0c/raw/76b0cb0ef0bfd8a2ec988aa54e30ecd1b483495d/descriptions.json')
+    .then(response => response.json())
+    .then(weatherIcons => {
+        // Visualization for Weather
+        var weatherData = aggregateData(data, 'Weather');
+        
+        // Only include weather types that are present in the data
+        var weatherLabels = weatherData.map(item => item.key);
+        var weatherCounts = weatherData.map(item => item.count);
 
-    <script>
-        var data = {{ data|tojson }};
-        function aggregateData(data, key) {
-            const counts = {};
-            data.forEach(item => {
-                counts[item[key]] = (counts[item[key]] || 0) + 1;
-            });
-            return Object.keys(counts).map(k => ({ key: k, count: counts[k] }));
-        }
-
-        var daysOfWeekLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-        // Ensure all days of the week are present in the data
-        function ensureAllDays(data) {
-            var dayCounts = {};
-            daysOfWeekLabels.forEach((day, index) => {
-                dayCounts[index + 1] = 0; // Initialize all days with count 0
-            });
-            data.forEach(item => {
-                dayCounts[item.key] = item.count;
-            });
-            return Object.keys(dayCounts).map(k => ({ key: k, count: dayCounts[k] }));
-        }
-
-        // Visualization for Day of the Week
-        var dayOfWeekData = ensureAllDays(aggregateData(data, 'Day of the Week'));
-        var dayOfWeekPlotData = [{
-            x: daysOfWeekLabels,
-            y: dayOfWeekData.map(item => item.count),
+        var weatherPlotData = [{
+            x: weatherLabels,
+            y: weatherCounts,
             type: 'bar'
         }];
-        var dayOfWeekLayout = {
-            title: 'Incidents by Day of the Week',
+
+        var weatherLayout = {
+            title: 'Incidents by Weather',
             xaxis: {
-                title: 'Day of the Week',
-                tickvals: daysOfWeekLabels,
-                ticktext: daysOfWeekLabels,
-                range: [0, 6]
+                title: 'Weather WMO codes',
+                type: 'category'  // Treat x-axis labels as categorical values
+            },
+            yaxis: {
+                title: 'Count of Incidents'
             },
             bargap: 0.2  // Adjust the gap between bars
         };
-        Plotly.newPlot('day-of-week-plot', dayOfWeekPlotData, dayOfWeekLayout);
 
+        Plotly.newPlot('weather-plot', weatherPlotData, weatherLayout);
 
-        // Visualization for Time of Day (Line Graph)
-        var timeOfDayData = aggregateData(data, 'Time of Day');
-        var timeOfDayPlotData = [{
-            x: timeOfDayData.map(item => item.key),
-            y: timeOfDayData.map(item => item.count),
-            type: 'scatter',  // Changed to 'scatter' for line graph
-            mode: 'lines+markers'
-        }];
-        var timeOfDayLayout = {
-            title: 'Incidents by Time of Day',
-            xaxis: {
-                title: 'Time of Day (Hour)',
-                dtick: 1  // Set x-axis tick interval to 1
-            },
-            yaxis: {
-                title: 'Count of Incidents'
-            }
-        };
-        Plotly.newPlot('time-of-day-plot', timeOfDayPlotData, timeOfDayLayout);
-
-
-
-        // Fetch weather icon data
-        fetch('https://gist.githubusercontent.com/stellasphere/9490c195ed2b53c707087c8c2db4ec0c/raw/76b0cb0ef0bfd8a2ec988aa54e30ecd1b483495d/descriptions.json')
-        .then(response => response.json())
-        .then(weatherIcons => {
-            // Visualization for Weather
-            var weatherData = aggregateData(data, 'Weather');
+        // Display weather icons below the plot
+        var weatherIconsContainer = document.getElementById('weather-icons');
+        weatherLabels.forEach((code, index) => {
+            var dayIcon = weatherIcons[code]?.day?.image || '';
+            var nightIcon = weatherIcons[code]?.night?.image || '';
+            var dayDescription = weatherIcons[code]?.day?.description || '';
+            var nightDescription = weatherIcons[code]?.night?.description || '';
+            var description = (dayDescription === nightDescription) ? dayDescription : `${dayDescription} / ${nightDescription}`;
             
-            // Only include weather types that are present in the data
-            var weatherLabels = weatherData.map(item => item.key);
-            var weatherCounts = weatherData.map(item => item.count);
-
-            var weatherPlotData = [{
-                x: weatherLabels,
-                y: weatherCounts,
-                type: 'bar'
-            }];
-
-            var weatherLayout = {
-                title: 'Incidents by Weather',
-                xaxis: {
-                    title: 'Weather WMO codes',
-                    type: 'category'  // Treat x-axis labels as categorical values
-                },
-                yaxis: {
-                    title: 'Count of Incidents'
-                },
-                bargap: 0.2  // Adjust the gap between bars
-            };
-
-            Plotly.newPlot('weather-plot', weatherPlotData, weatherLayout);
-
-            // Display weather icons below the plot
-            var weatherIconsContainer = document.getElementById('weather-icons');
-            weatherLabels.forEach((code, index) => {
-                var dayIcon = weatherIcons[code]?.day?.image || '';
-                var nightIcon = weatherIcons[code]?.night?.image || '';
-                var dayDescription = weatherIcons[code]?.day?.description || '';
-                var nightDescription = weatherIcons[code]?.night?.description || '';
-                var description = (dayDescription === nightDescription) ? dayDescription : `${dayDescription} / ${nightDescription}`;
-                
-                var iconItem = document.createElement('div');
-                iconItem.className = 'weather-icon-item';
-                iconItem.innerHTML = `<strong>${code}</strong><br>
-                                      ${dayIcon ? `<img src="${dayIcon}" height="40">` : ''}
-                                      ${nightIcon && dayIcon !== nightIcon ? ` / <img src="${nightIcon}" height="40">` : ''}
-                                      <br>${description}`;
-                weatherIconsContainer.appendChild(iconItem);
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching weather icons:', error);
+            var iconItem = document.createElement('div');
+            iconItem.className = 'weather-icon-item';
+            iconItem.innerHTML = `<strong>${code}</strong><br>
+                                    ${dayIcon ? `<img src="${dayIcon}" height="40">` : ''}
+                                    ${nightIcon && dayIcon !== nightIcon ? ` / <img src="${nightIcon}" height="40">` : ''}
+                                    <br>${description}`;
+            weatherIconsContainer.appendChild(iconItem);
         });
+    })
+    .catch(error => {
+        console.error('Error fetching weather icons:', error);
+    });
 
-        // Aggregate and sort data by Nature (incident type)
-        function aggregateAndSortDataByKey(data, key, topN) {
-            const counts = {};
-            data.forEach(item => {
-                counts[item[key]] = (counts[item[key]] || 0) + 1;
-            });
-            const sortedCounts = Object.keys(counts).map(k => ({ key: k, count: counts[k] }))
-                .sort((a, b) => b.count - a.count)
-                .slice(0, topN);
-            return sortedCounts;
-        }
+    // Aggregate and sort data by Nature (incident type)
+    function aggregateAndSortDataByKey(data, key, topN) {
+        const counts = {};
+        data.forEach(item => {
+            counts[item[key]] = (counts[item[key]] || 0) + 1;
+        });
+        const sortedCounts = Object.keys(counts).map(k => ({ key: k, count: counts[k] }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, topN);
+        return sortedCounts;
+    }
 
-        // Aggregate and sort data by Nature (incident type)
-        function aggregateAndSortDataByKey(data, key, topN) {
-            const counts = {};
-            data.forEach(item => {
-                counts[item[key]] = (counts[item[key]] || 0) + 1;
-            });
-            const sortedCounts = Object.keys(counts).map(k => ({ key: k, count: counts[k] }))
-                .sort((a, b) => b.count - a.count)
-                .slice(0, topN);
-            return sortedCounts;
-        }
+    // Aggregate and sort data by Nature (incident type)
+    function aggregateAndSortDataByKey(data, key, topN) {
+        const counts = {};
+        data.forEach(item => {
+            counts[item[key]] = (counts[item[key]] || 0) + 1;
+        });
+        const sortedCounts = Object.keys(counts).map(k => ({ key: k, count: counts[k] }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, topN);
+        return sortedCounts;
+    }
 
-        // Visualization for Top 50 Incident Types
-        var topNatureData = aggregateAndSortDataByKey(data, 'Nature', 40);
-        var topNaturePlotData = [{
-            x: topNatureData.map(item => item.count),
-            y: topNatureData.map(item => item.key),
-            type: 'bar',
-            orientation: 'h',
-            text: topNatureData.map(item => item.key),  // Text inside the bars
-            textposition: 'inside',
-            insidetextanchor: 'middle',  // Center text inside bars
-            hoverinfo: 'x+text',  // Show x, y, and text on hover
-        }];
+    // Visualization for Top 50 Incident Types
+    var topNatureData = aggregateAndSortDataByKey(data, 'Nature', 40);
+    var topNaturePlotData = [{
+        x: topNatureData.map(item => item.count),
+        y: topNatureData.map(item => item.key),
+        type: 'bar',
+        orientation: 'h',
+        text: topNatureData.map(item => item.key),  // Text inside the bars
+        textposition: 'inside',
+        insidetextanchor: 'middle',  // Center text inside bars
+        hoverinfo: 'x+text',  // Show x, y, and text on hover
+    }];
 
-        var topNatureLayout = {
-            title: 'Top 40 Most Occurring Incident Types',
-            xaxis: {
-                title: 'Count of Incidents'
-            },
-            yaxis: {
-                title: 'Incident Types',
-                showticklabels: false,
-                autorange: 'reversed'  // Display bars in descending order
-            },
-            height: 1600,  // Increase the height of the plot
-            bargap: 0.1,  // Adjust the gap between bars
-        };
-        
-        Plotly.newPlot('incident-rank-plot', topNaturePlotData, topNatureLayout);
-        // Visualization for Top 50 Locations
-        var topLocationData = aggregateAndSortDataByKey(data, 'Location', 30);
-        var topLocationPlotData = [{
-            x: topLocationData.map(item => item.count),
-            y: topLocationData.map(item => item.key),
-            type: 'bar',
-            orientation: 'h',
-            text: topLocationData.map(item => item.key),  // Text inside the bars
-            textposition: 'inside',
-            insidetextanchor: 'middle',  // Center text inside bars
-            hoverinfo: 'x+text',  // Show x, y, and text on hover
-        }];
+    var topNatureLayout = {
+        title: 'Top 40 Most Occurring Incident Types',
+        xaxis: {
+            title: 'Count of Incidents'
+        },
+        yaxis: {
+            title: 'Incident Types',
+            showticklabels: false,
+            autorange: 'reversed'  // Display bars in descending order
+        },
+        height: 1600,  // Increase the height of the plot
+        bargap: 0.1,  // Adjust the gap between bars
+    };
+    
+    Plotly.newPlot('incident-rank-plot', topNaturePlotData, topNatureLayout);
+    // Visualization for Top 50 Locations
+    var topLocationData = aggregateAndSortDataByKey(data, 'Location', 30);
+    var topLocationPlotData = [{
+        x: topLocationData.map(item => item.count),
+        y: topLocationData.map(item => item.key),
+        type: 'bar',
+        orientation: 'h',
+        text: topLocationData.map(item => item.key),  // Text inside the bars
+        textposition: 'inside',
+        insidetextanchor: 'middle',  // Center text inside bars
+        hoverinfo: 'x+text',  // Show x, y, and text on hover
+    }];
 
-        var topLocationLayout = {
-            title: 'Top 30 Most Occurring Locations',
-            xaxis: {
-                title: 'Count of Incidents'
-            },
-            yaxis: {
-                title: 'Locations',
-                showticklabels: false,
-                autorange: 'reversed'  // Display bars in descending order
-            },
-            height: 1200,  // Increase the height of the plot
-            bargap: 0.1,  // Adjust the gap between bars
-        };
+    var topLocationLayout = {
+        title: 'Top 30 Most Occurring Locations',
+        xaxis: {
+            title: 'Count of Incidents'
+        },
+        yaxis: {
+            title: 'Locations',
+            showticklabels: false,
+            autorange: 'reversed'  // Display bars in descending order
+        },
+        height: 1200,  // Increase the height of the plot
+        bargap: 0.1,  // Adjust the gap between bars
+    };
 
-        Plotly.newPlot('top-locations-plot', topLocationPlotData, topLocationLayout);
+    Plotly.newPlot('top-locations-plot', topLocationPlotData, topLocationLayout);
 
-        // Aggregate data based on EMSSTAT
-        function aggregateEMSSTAT(data) {
-            const counts = { true: 0, false: 0 };
-            data.forEach(item => {
-                if (item['EMSSTAT'].toUpperCase() === 'TRUE') {
-                    counts.true += 1;
-                } else {
-                    counts.false += 1;
-                }
-            });
-            return counts;
-        }
+    // Aggregate data based on EMSSTAT
+    function aggregateEMSSTAT(data) {
+        const counts = { true: 0, false: 0 };
+        data.forEach(item => {
+            if (item['EMSSTAT'].toUpperCase() === 'TRUE') {
+                counts.true += 1;
+            } else {
+                counts.false += 1;
+            }
+        });
+        return counts;
+    }
 
-        // Visualization for EMSSTAT
-        var emsstatData = aggregateEMSSTAT(data);
-        var emsstatPlotData = [{
-            values: [emsstatData.true, emsstatData.false],
-            labels: ['True', 'False'],
-            type: 'pie'
-        }];
+    // Visualization for EMSSTAT
+    var emsstatData = aggregateEMSSTAT(data);
+    var emsstatPlotData = [{
+        values: [emsstatData.true, emsstatData.false],
+        labels: ['True', 'False'],
+        type: 'pie'
+    }];
 
-        var emsstatLayout = {
-            title: 'Distribution of EMSSTAT',
-        };
+    var emsstatLayout = {
+        title: 'Distribution of EMSSTAT',
+    };
 
-        Plotly.newPlot('emsstat-plot', emsstatPlotData, emsstatLayout);
-        // Visualization for Side of Town (Pie Chart)
-        var sideOfTownData = aggregateData(data, 'Side of Town');
+    Plotly.newPlot('emsstat-plot', emsstatPlotData, emsstatLayout);
+    // Visualization for Side of Town (Pie Chart)
+    var sideOfTownData = aggregateData(data, 'Side of Town');
 
-        // Order for Side of Town
-        var sideOfTownOrder = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-        sideOfTownData.sort((a, b) => sideOfTownOrder.indexOf(a.key) - sideOfTownOrder.indexOf(b.key));
+    // Order for Side of Town
+    var sideOfTownOrder = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    sideOfTownData.sort((a, b) => sideOfTownOrder.indexOf(a.key) - sideOfTownOrder.indexOf(b.key));
 
-        var highestFrequencyIndex = sideOfTownData.map(item => item.count).indexOf(Math.max(...sideOfTownData.map(item => item.count)));
+    var highestFrequencyIndex = sideOfTownData.map(item => item.count).indexOf(Math.max(...sideOfTownData.map(item => item.count)));
 
-        var sideOfTownPlotData = [{
-            values: sideOfTownData.map(item => item.count),
-            labels: sideOfTownData.map(item => item.key),
-            type: 'pie',
-            textinfo: 'label+percent',
-            insidetextorientation: 'radial',
-            pull: sideOfTownData.map((_, i) => i === highestFrequencyIndex ? 0.1 : 0)
-        }];
+    var sideOfTownPlotData = [{
+        values: sideOfTownData.map(item => item.count),
+        labels: sideOfTownData.map(item => item.key),
+        type: 'pie',
+        textinfo: 'label+percent',
+        insidetextorientation: 'radial',
+        pull: sideOfTownData.map((_, i) => i === highestFrequencyIndex ? 0.1 : 0)
+    }];
 
-        var sideOfTownLayout = {
-            title: 'Incidents by Side of Town'
-        };
+    var sideOfTownLayout = {
+        title: 'Incidents by Side of Town'
+    };
 
-        Plotly.newPlot('side-of-town-plot', sideOfTownPlotData, sideOfTownLayout);
+    Plotly.newPlot('side-of-town-plot', sideOfTownPlotData, sideOfTownLayout);
 
-    </script>
-</body>
-</html>
+</script>
+{% endblock %}
+

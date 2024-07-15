@@ -21,6 +21,10 @@ numpy = "*"
 flask = "*"
 flask-wtf = "*"
 waitress = "*"
+python-dotenv = "*"
+flask-mail = "*"
+email-validator = "*"
+flask-mailman = "*"
 
 [dev-packages]
 
