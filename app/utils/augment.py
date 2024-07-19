@@ -8,7 +8,6 @@ from .side import calculate_street_position
 from .rank import calculate_frequencies, assign_ranks
 from .emstat import check_emsstat
 
-
 def augment_data(db_path):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -19,9 +18,6 @@ def augment_data(db_path):
     # Calculate frequencies and then ranks for locations and natures
     location_frequencies = calculate_frequencies(incidents_dicts, 'Location')
     nature_frequencies = calculate_frequencies(incidents_dicts, 'Nature')
-    # check if frequency code is working
-    # for  k, v in location_frequencies.items():
-    #     print(f"Name: {k}, Frequency: {v}")
     location_ranks = assign_ranks(location_frequencies)
     nature_ranks = assign_ranks(nature_frequencies)
 
@@ -37,13 +33,19 @@ def augment_data(db_path):
         incident['Time Of Day'] = incident_time.hour
         # latitude, longitude = geocode_location(location)  # Assuming implementation
         latitude, longitude = geocode_address(incident['Location'])
-        incident['Weather'] = fetch_weathercode_using_meteo(latitude, longitude, incident_time.strftime("%Y-%m-%d"), incident_time.hour)
-        incident['Side of Town'] = calculate_street_position(latitude, longitude)
+        
+        if latitude is not None and longitude is not None:
+            incident['Weather'] = fetch_weathercode_using_meteo(latitude, longitude, incident_time.strftime("%Y-%m-%d"), incident_time.hour)
+            incident['Side of Town'] = calculate_street_position(latitude, longitude)
+        else:
+            incident['Weather'] = 'Unknown'
+            incident['Side of Town'] = 'Unknown'
+
         incident['Location Rank'] = location_ranks[incident['Location']]
         incident['Nature Rank'] = nature_ranks[incident['Nature']]
         incident['EMSSTAT'] = check_emsstat(incidents_dicts, index)
         augmented_incidents.append(incident)
-        # print('check2')
+
     resources_dir = os.path.join('app', 'resources')
     if not os.path.exists(resources_dir):
         os.makedirs(resources_dir)
@@ -64,5 +66,3 @@ def augment_data(db_path):
                 incident['EMSSTAT']
             ])
     return csv_file_path
-    # return augmented_incidents
- 

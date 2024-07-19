@@ -1,4 +1,4 @@
-import googlemaps # type: ignore
+import googlemaps
 import configparser
 
 # Read API key from config file
@@ -11,21 +11,24 @@ gmaps = googlemaps.Client(key=api_key)
 geocode_cache = {}
 
 def geocode_address(address):
-    
-    # Try to fetch coordinates from the database first
+    # Try to fetch coordinates from the cache first
     if address in geocode_cache:
-        latitude = geocode_cache[address][0]
-        longitude = geocode_cache[address][1]
-        return latitude,longitude
+        latitude, longitude = geocode_cache[address][0], geocode_cache[address][1]
+        return latitude, longitude
 
     else:
         # No coordinates found; query Google Maps API
         address_string = f"{address}, Norman, Oklahoma, USA" 
-        api_result = gmaps.geocode(address_string)[0]
-        latitude = api_result['geometry']['location']['lat']
-        longitude = api_result['geometry']['location']['lng']
+        api_result = gmaps.geocode(address_string)
         
-        # Save the new coordinates to the database
-        # Save the coordinates in the cache
-        geocode_cache[address] = (latitude, longitude)
-        return latitude, longitude
+        if api_result:
+            latitude = api_result[0]['geometry']['location']['lat']
+            longitude = api_result[0]['geometry']['location']['lng']
+            
+            # Save the new coordinates in the cache
+            geocode_cache[address] = (latitude, longitude)
+            return latitude, longitude
+        else:
+            # Handle the case where the API returns no results
+            print(f"Geocoding API returned no results for address: {address_string}")
+            return None, None
