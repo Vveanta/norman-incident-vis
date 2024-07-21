@@ -43,6 +43,8 @@ app/resources
 docs/weathericons.json
 app/static/img/input_0.png 
 test_api_key.py
+app/ass2.py
+assignment2.py
 
 #other cache files
 .cache.sqlite
