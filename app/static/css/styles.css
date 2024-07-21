@@ -71,7 +71,12 @@ body {
     padding: 0px 7px 0px 7px;
     color: white;
 }
-
+#navbar li a:hover {
+    opacity: 0.6;
+}
+/* #navbar li a:active {
+    text-decoration: underline;
+} */
 #navbar li a.special-btn {
     background-color: white;
     color: black;
@@ -79,7 +84,7 @@ body {
     border-radius: 5px;
 }
 
-#navbar li a.special-btn:hover {
+/* #navbar li a.special-btn:hover {
     opacity: 0.6;
-}
+} */
  

@@ -38,6 +38,7 @@
     width: 60%;
     height: 100%;
     align-items: center;
+    justify-content: center;
 }
 
 .btn {
@@ -73,6 +74,7 @@
     padding: 12px 20px 12px 20px;
     margin: 20px 5px 10px 5px;
     text-align: center;
+    
 }
 
 #punch {
@@ -83,11 +85,26 @@
     text-align: center;
 }
 
+#punch > h1 {
+    color: black;
+    font-size: 1.7em;
+    padding: 5px;
+}
 #punch > p {
     line-height: 1.6;
     font-size: 1.2em;
+    text-align: justify;
+    padding: 5px 10px;
 }
-
+#punch p a:link{
+    color: blue;
+}
+#punch p a:visited{
+    color: purple;
+}
+#punch p a:hover{
+    text-decoration: none
+}
 #gallery {
     padding: 50px;
     margin-top: 30px;
@@ -95,7 +112,7 @@
 }
 
 #gallery > h2 {
-    font-size: 3em;
+    font-size: 2.5em;
     margin-bottom: 30px;
 }
 
@@ -127,7 +144,7 @@
 }
 
 .Feature img {
-    width: 150px;
+    width: 100px;
     height: 100px;
     border-radius: 50%;
     margin-top: 15px;
@@ -155,6 +172,7 @@
     padding: 10px;
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: justify;
     /* transition: display 1s ease; */
 }
 

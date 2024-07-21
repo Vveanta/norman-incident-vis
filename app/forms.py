@@ -14,7 +14,7 @@ class UploadForm(FlaskForm):
 class FeedbackForm(FlaskForm):
     name = StringField('Full name', validators=[DataRequired()])
     email = EmailField('Email', validators=[DataRequired(), Email()])
-    user_type = SelectMultipleField('Which Describes you the Best', choices=[('student', 'Student'), ('professor', 'Professor'), ('recruiter', 'Corporate Recruiter'), ('other', 'Other')], validators=[DataRequired()])
+    user_type = RadioField('Which Describes you the Best', choices=[('student', 'Student'), ('professor', 'Professor'), ('recruiter', 'Corporate Recruiter'), ('other', 'Other')], validators=[DataRequired()])
     rating = RadioField('Rate Your Experience', choices=[('1', '1 - Very Poor'), ('2', '2 - Poor'), ('3', '3 - Average'), ('4', '4 - Good'), ('5', '5 - Excellent')], validators=[DataRequired()])
     feedback = TextAreaField('Your Feedback', validators=[DataRequired()])
     submit = SubmitField('Submit Feedback')

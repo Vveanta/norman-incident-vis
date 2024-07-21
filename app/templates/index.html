@@ -11,7 +11,8 @@
         </div>
         <div id="punch">
             <h1>Welcome to NormanPD Incident Data Visualizer</h1>
-            <p>This web application allows you to upload NormanPD incident reports in CSV or PDF format. It processes the data and provides various visualizations and analytics.</p>
+            <p>The Norman, Oklahoma police department regularly reports incidents, arrests, and other activities. This data is available as daily incident summary reports on <a href="https://www.normanok.gov/public-safety/police-department/crime-prevention-data/department-activity-reports">their website</a>. This web application allows you to upload these reports in CSV or PDF format or provide URLs to these files.</p>
+            <p>We process and visualize this data to help identify trends, such as peak times for incidents and high-incident areas. These insights can aid in crime prevention, resource allocation, and public safety improvements. You can also download the augmented data to perform your own analysis or integrate it with other tools.</p>
         </div>
     </div>
 </section>
@@ -19,40 +20,41 @@
     <h2>Project Workflow</h2>
     <div class="Featuresgal">
         <div class="Feature" id="upload-feature">
-            <img src="{{ url_for('static', filename='img/input_0.png') }}" alt="Upload Data">
-            <h3>Upload data</h3>
-            <p>Upload incident reports in CSV or PDF format or directly the URLs.</p>
+            <img src="{{ url_for('static', filename='img/upload.png') }}" alt="Upload Data">
+            <h3>Upload Data</h3>
+            <p>Upload incident reports in CSV, PDF, or URLs.</p>
             <div class="details">
-                <p>Supported formats: CSV, PDF.</p>
-                <p>Ensure the files follow the specified format.</p>
+                <p>Supported formats: CSV, PDF, URLs. Ensure files are from the Norman, Oklahoma police department daily incident summary from their website.</p>
+                <p>Files should include fields: Date/Time, Incident Number, Location, Nature, Incident ORI.</p>
+                
             </div>
         </div>
         <div class="Feature" id="process-feature">
-            <img src="{{ url_for('static', filename='img/input_0.png') }}" alt="Process Data">
+            <img src="{{ url_for('static', filename='img/process.png') }}" alt="Process Data">
             <h3>Process and Augment</h3>
-            <p>Process URLs directly to fetch incident reports.</p>
+            <p>Processes files/URLs to fetch and augment incident reports.</p>
             <div class="details">
-                <p>Features in original data: Date/Time, Incident Number, Location, Nature, Incident ORI.</p>
-                <p>Features in augmented data: Day of the Week, Time of Day, Weather, Location Rank, Side of Town, Incident Rank, Nature, EMSSTAT.</p>
+                <p>Tools used: SQL for storage, Google Maps API for geocoding, Open-Meteo for weather. </p>
+                <p>Augmented fields: Day of the Week, Time of Day, Weather, Location Rank, Side of Town, Incident Rank, EMSSTAT status.
+
+                </p>
             </div>
         </div>
         <div class="Feature" id="visualize-feature">
-            <img src="{{ url_for('static', filename='img/input_0.png') }}" alt="Visualizer">
+            <img src="{{ url_for('static', filename='img/vis.png') }}" alt="Visualizer">
             <h3>Visualizer</h3>
-            <p>Visualize data with bar charts, line graphs, and pie charts.</p>
+            <p>Visualize data with various charts and plots.</p>
             <div class="details">
-                <p>Bar charts: Incident counts by nature.</p>
-                <p>Line graphs: Incident trends over time.</p>
-                <p>Pie charts: Distribution of incidents by nature.</p>
+                <p>Used Plotly and WMO code images to create interactive visualizations</p>
+                <p>Visualizations include: 'day of week plot', 'time-of-day plot', 'weather plot', 'top incidents plot', 'top locations plot', 'side of town plot', and 'EMSSTAT' plot.</p>
             </div>
         </div>
         <div class="Feature" id="download-feature">
-            <img src="{{ url_for('static', filename='img/input_0.png') }}" alt="Download">
-            <h3>Download</h3>
-            <p>Download the augmented data.</p>
+            <img src="{{ url_for('static', filename='img/download.png') }}" alt="Download">
+            <h3>Download Data</h3>
+            <p>Download the augmented data in CSV format.</p>
             <div class="details">
-                <p>Available formats: CSV, JSON.</p>
-                <p>Includes all processed and augmented features.</p>
+                <p>Includes fields: 'Day of the Week', 'Time of Day', 'Weather', 'Location', 'Location Rank', 'Side of Town', 'Incident Rank', 'Nature', 'EMSSTAT'.</p>
             </div>
         </div>
     </div>

@@ -8,9 +8,29 @@ import pandas as pd
 from .utils import create_db, fetch_incidents, extract_incidents, populate_db, augment_data
 import urllib.error
 import urllib.parse
+import psycopg2
+from psycopg2 import sql
+import configparser
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+
+# Database connection setup
+def get_db_connection():
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
+    conn = psycopg2.connect(
+        dbname=config['database']['dbname'],
+        user=config['database']['user'],
+        password=config['database']['password'],
+        host=config['database']['host'],
+        port=config['database']['port']
+    )
+    return conn
 
 main = Blueprint('main', __name__)
 
@@ -123,16 +143,39 @@ def feedback():
 
     if request.method == 'POST' and feedback_form.validate_on_submit():
         logger.info("Handling POST request and form validation")
-        feedback_data = {
-            "name": feedback_form.name.data,
-            "email": feedback_form.email.data,
-            "user_type": feedback_form.user_type.data,
-            "rating": feedback_form.rating.data,
-            "feedback": feedback_form.feedback.data
-        }
-        logger.info(f"Feedback data: {feedback_data}")
-        return jsonify(status='success')
+        user_type = feedback_form.user_type.data # Assuming single selection for simplicity
+        logger.info(f"Received user type from form: {user_type}")
+        # Get user_type_id from user_types table
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(sql.SQL("SELECT id FROM user_types WHERE type = %s"), [user_type])
+        user_type_id = cur.fetchone()
+
+        if user_type_id:
+            # Prepare feedback data to be inserted
+            feedback_data = {
+                "name": feedback_form.name.data,
+                "email": feedback_form.email.data,
+                "user_type_id": user_type_id[0],
+                "rating": feedback_form.rating.data,
+                "feedback": feedback_form.feedback.data
+            }
+            logger.info(f"Feedback data: {feedback_data}")
+
+            # Insert feedback data into feedback table
+            cur.execute(sql.SQL("""
+                INSERT INTO feedback (name, email, user_type_id, rating, feedback)
+                VALUES (%s, %s, %s, %s, %s)
+            """), list(feedback_data.values()))
+            conn.commit()
+            cur.close()
+            conn.close()
+            return jsonify(status='success')
+        else:
+            return jsonify(status='failure', message='Invalid user type')
+
     return render_template('feedback.html', feedback_form=feedback_form)
+
 
 @main.route('/thankyou')
 def thankyou():
