@@ -76,23 +76,24 @@
     margin-bottom: 20px;
     width: 100vw;
 }
-.plot-cont{
-    width: 100%;
-    margin: 20px;
-    max-width: 800px;
-    display: inline-block;
-}
-.plot {
+
+.doubleplot {
     width:100%;
     margin: 20px;
-    max-width: 800px;
+    max-width: 700px;
+    display: inline-block;
+}
+.singleplot {
+    width:100%;
+    margin: 20px;
+    max-width: 1000px;
     display: inline-block;
 }
 
 #weath {
     margin-bottom: 0;
 }
-.weather-plot{
+#weather-plot{
     margin-bottom: 0;
     margin-right: 0px;
 }
@@ -161,4 +162,75 @@
 }
 .code-cont{
     display: inline-block;
+}
+.legend-gradient {
+    background: linear-gradient(to right, #00ff00, yellow, red); /* Green to red gradient */
+    width: 100px;
+    height: 10px;
+    border: 1px solid #555;
+    margin: 5px;
+}
+.legend-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight:bolder;
+}
+#map{
+    z-index: 2;
+}
+.input-container{
+    text-align: center;
+    margin: 10px 5px 0px 5px;
+    width: 100%;
+}
+.input-container {
+    text-align: center;
+    margin: 10px 5px 0px 5px;
+    width: 100%;
+    gap: 10px; /* Adds space between the label, input, and button */
+}
+
+.input-container label {
+    font-size: 1.2em; /* Sets the font size of the label */
+    margin-right: 10px; /* Adds some space to the right of the label */
+}
+
+.input-container input[type="number"] {
+    padding: 5px 10px; /* Adds padding inside the input field */
+    font-size: 1.2em; /* Sets the font size of the input text */
+    border: 1px solid #ccc; /* Adds a border around the input field */
+    border-radius: 4px; /* Rounds the corners of the input field */
+    width: 60px; /* Sets a fixed width for the input field */
+    outline: none; /* Removes the default focus outline */
+    transition: border-color 0.3s; /* Adds a transition effect for the border color */
+}
+
+.input-container input[type="number"]:focus {
+    border-color: #007bff; /* Changes border color on focus */
+}
+.des-container {
+    text-align: center;
+    margin: 20px 5px 10px 5px;
+    width: 80%;
+    font-size: 1.2em;
+}
+.results-container {
+    --hr-line-offset: 25%;
+    --hr-color: lightsalmon;
+}
+
+.custom-hr {
+    border: 0; /* Remove default border */
+    border-top: 3px solid; /* Set a default thickness */
+    border-image-slice: 1;
+    border-image-source: linear-gradient(
+        to right,
+        transparent,
+        var(--hr-color) calc(50% - var(--hr-line-offset)),
+        var(--hr-color) calc(50% + var(--hr-line-offset)),
+        transparent
+    );
+    margin: 20px 0; /* Add some margin above and below */
+    width: 100%; /* Full width */
 }

@@ -7,8 +7,20 @@ from .weather import fetch_weathercode_using_meteo
 from .side import calculate_street_position
 from .rank import calculate_frequencies, assign_ranks
 from .emstat import check_emsstat
-
+def create_geocode_table(geocode_db_path="resources/normanpd.db"):
+    conn = sqlite3.connect(geocode_db_path)
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS geocodes (
+            location TEXT PRIMARY KEY,
+            latitude REAL,
+            longitude REAL
+        );
+    ''')
+    conn.commit()
+    conn.close()
 def augment_data(db_path):
+    create_geocode_table()
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM incidents')

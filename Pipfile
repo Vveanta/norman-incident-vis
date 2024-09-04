@@ -23,6 +23,7 @@ waitress = "*"
 python-dotenv = "*"
 email-validator = "*"
 psycopg2-binary = "*"
+plotly = "*"
 
 [dev-packages]
 

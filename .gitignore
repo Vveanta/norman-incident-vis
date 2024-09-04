@@ -46,6 +46,7 @@ test_api_key.py
 app/ass2.py
 assignment2.py
 config.ini
+results.py
 
 #other cache files
 .cache.sqlite

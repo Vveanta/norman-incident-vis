@@ -1,5 +1,6 @@
 import csv
 import logging
+import sqlite3
 from flask import Blueprint, render_template, request, redirect, send_from_directory, url_for, flash, jsonify
 from .forms import URLForm, UploadForm, FeedbackForm
 from werkzeug.utils import secure_filename
@@ -11,6 +12,7 @@ import urllib.parse
 import psycopg2
 from psycopg2 import sql
 import configparser
+
 
 
 logging.basicConfig(level=logging.INFO)
@@ -128,7 +130,15 @@ def results():
     csv_file_path = request.args.get('csv_file_path')
     failed_urls = urllib.parse.unquote_plus(request.args.get('failed_urls', '')).split(',')
     data = get_augmented_data(csv_file_path)
-    return render_template('results.html', data=data, csv_url=csv_file_path, failed_urls=failed_urls)
+    conn = sqlite3.connect('resources/normanpd.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT location, latitude, longitude, COUNT(*) as count FROM incidents JOIN geocodes ON incidents.incident_location = geocodes.location GROUP BY location')
+    locations = cursor.fetchall()
+    conn.close()
+    # Convert to a format that can be easily used in the template
+    locations_data = [{'location': loc[0], 'latitude': loc[1], 'longitude': loc[2], 'count': loc[3]} for loc in locations]
+    return render_template('results.html', data=data, csv_url=csv_file_path, failed_urls=failed_urls,locations=locations_data)
+    # return redirect("http://localhost:8501", code=302)
 
 @main.route('/download/<path:filename>')
 def download_file(filename):

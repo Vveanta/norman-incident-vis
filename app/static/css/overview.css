@@ -13,11 +13,11 @@
 
 #intro::before {
     left: 0;
-    background-color: #F8F8F8; /* Replace with the URL of the blurred left-side image */
+    background-color: #FFF2D7; /* Replace with the URL of the blurred left-side image */
     width: 54%; /* Adjust the blur intensity as needed */
     z-index: -1;
     opacity: 0.9;
-    box-shadow: 5px 0px 7px 15px #F8F8F8;
+    box-shadow: 5px 0px 7px 15px #FFF2D7;
 }
 
 #intro::after {
@@ -28,7 +28,7 @@
 #intro {
     position: relative;
     width: 100%;
-    height: 50vh; /* You can adjust the height as needed */
+    height: 100%; /* You can adjust the height as needed */
     z-index: 50;
 }
 
