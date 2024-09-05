@@ -42,15 +42,25 @@ def index():
 
 @main.route('/upload', methods=['GET', 'POST'])
 def upload():
+    default_pdf_files = [(filename, filename) for filename in os.listdir('defaultpdfs')]
     upload_form = UploadForm()
+    upload_form.default_pdfs.choices = default_pdf_files 
     if upload_form.validate_on_submit():
+        success_count = 0
+        failed_urls = []
+        skipped_urls = []
         db_path = ensure_database_exists()
         file_type = request.form['file_type']
-        failed_urls = []
-
         if file_type == 'url':
             urls = request.form['urls'].splitlines()
-            failed_urls = process_urls(urls, db_path)
+            failed_urls,skipped_urls,success_count = process_urls(urls, db_path,success_count)
+        elif file_type == 'default_pdf':
+            # Handling default PDF file selected from dropdown
+            selected_pdf = upload_form.default_pdfs.data
+            file_path = os.path.join('defaultpdfs', selected_pdf)
+            success = process_pdf(file_path, db_path)
+            if not success:
+                failed_urls.append(selected_pdf)
         else:
             files = request.files.getlist('file')
             for file in files:
@@ -59,9 +69,16 @@ def upload():
                 file.save(file_path)
 
                 if file_type == 'csv' and filename.endswith('.csv'):
-                    failed_urls.extend(process_csv(file_path, db_path))
+                    failed, skipped, success_count = process_csv(file_path, db_path, success_count)
+                    failed_urls.extend(failed)
+                    skipped_urls.extend(skipped)
                 elif file_type == 'pdf' and filename.endswith('.pdf'):
+                    if success_count >=3:
+                        skipped_urls.append(filename)
+                        continue
                     success = process_pdf(file_path, db_path)
+                    if success:
+                        success_count += 1
                     if not success:
                         failed_urls.append(filename)
                 else:
@@ -69,12 +86,16 @@ def upload():
                     return redirect(url_for('main.upload'))
 
         csv_file_path = augment_data(db_path)
-        return redirect(url_for('main.results', csv_file_path=csv_file_path, failed_urls=urllib.parse.quote_plus(','.join(failed_urls))))
+        return redirect(url_for('main.results', csv_file_path=csv_file_path, failed_urls=urllib.parse.quote_plus(','.join(failed_urls)), skipped_urls=urllib.parse.quote_plus(','.join(skipped_urls))))
     return render_template('upload.html', upload_form=upload_form)
 
-def process_urls(urls, db_path):
+def process_urls(urls, db_path, success_count):
     failed_urls = []
+    skipped_urls=[]
     for url in urls:
+        if success_count >= 3:
+            skipped_urls.append(url)
+            continue
         pdf_filename = fetch_pdf(url)
         if pdf_filename is None:
             logger.warning(f"Skipping URL: {url} due to fetch failure.")
@@ -84,15 +105,16 @@ def process_urls(urls, db_path):
         try:
             incidents = extract_incidents(pdf_filename)
             populate_db(db_path, incidents)
+            success_count += 1
         except ValueError as e:
             logger.warning(f"Error extracting incidents from URL: {url} - {e}")
             failed_urls.append(url)
 
-    return failed_urls
+    return failed_urls, skipped_urls, success_count
 
-def process_csv(file_path, db_path):
+def process_csv(file_path, db_path,success_count):
     urls = pd.read_csv(file_path, header=None)
-    return process_urls(urls[0], db_path)
+    return process_urls(urls[0], db_path,success_count)
 
 def fetch_pdf(url):
     local_filename = os.path.join('/tmp', url.split('/')[-1].split('.')[0])
@@ -129,6 +151,7 @@ def ensure_database_exists():
 def results():
     csv_file_path = request.args.get('csv_file_path')
     failed_urls = urllib.parse.unquote_plus(request.args.get('failed_urls', '')).split(',')
+    skipped_urls = urllib.parse.unquote_plus(request.args.get('skipped_urls', '')).split(',')
     data = get_augmented_data(csv_file_path)
     conn = sqlite3.connect('resources/normanpd.db')
     cursor = conn.cursor()
@@ -137,7 +160,7 @@ def results():
     conn.close()
     # Convert to a format that can be easily used in the template
     locations_data = [{'location': loc[0], 'latitude': loc[1], 'longitude': loc[2], 'count': loc[3]} for loc in locations]
-    return render_template('results.html', data=data, csv_url=csv_file_path, failed_urls=failed_urls,locations=locations_data)
+    return render_template('results.html', data=data, csv_url=csv_file_path, failed_urls=failed_urls,skipped_urls=skipped_urls,locations=locations_data)
     # return redirect("http://localhost:8501", code=302)
 
 @main.route('/download/<path:filename>')

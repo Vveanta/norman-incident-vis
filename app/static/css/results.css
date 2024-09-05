@@ -10,26 +10,6 @@
     padding: 20px;
 }
 
-/* Error message styling */
-.error h2 {
-    color: red;
-    font-weight: bold;
-    padding: 5px 0px;
-}
-.error {
-    text-align: left;
-    padding: 20px;
-    -webkit-text-fill-color: red;
-}
-.error ul {
-    list-style: none;
-    margin-left: 0;
-    padding-left: 0;
-}
-.error li {
-    text-indent: 3ch;
-}
-
 /* Button styling */
 .btn {
     font-size: 1.2em;
@@ -233,4 +213,43 @@
     );
     margin: 20px 0; /* Add some margin above and below */
     width: 100%; /* Full width */
+}
+
+
+.error {
+    background-color: #f8d7da; /* Light red background for warning */
+    border-left: 5px solid #f44336; /* Red border for emphasis */
+    padding: 16px;
+    margin: 20px 0;
+    border-radius: 4px;
+    color: #721c24;
+    font-family: 'Arial', sans-serif;
+}
+
+.error h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #f44336;
+}
+
+.error ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.error ul li {
+    margin-bottom: 8px;
+}
+
+.error p {
+    margin-top: 10px;
+}
+
+.error a {
+    color: #007bff; /* Link color */
+    text-decoration: none; /* Remove underline */
+}
+
+.error a:hover {
+    text-decoration: underline; /* Underline on hover */
 }

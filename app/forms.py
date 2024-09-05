@@ -1,14 +1,25 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, FileField, RadioField, MultipleFileField,TextAreaField, EmailField, SelectMultipleField
-from wtforms.validators import DataRequired, URL, Email
+from wtforms import StringField, SubmitField, FileField, RadioField, MultipleFileField,TextAreaField, EmailField, SelectMultipleField, SelectField
+from wtforms.validators import DataRequired, URL, Email,ValidationError
 
 class URLForm(FlaskForm):
     url = StringField('Enter URL of PDF', validators=[DataRequired(), URL()])
     submit = SubmitField('Submit')
+class ConditionalDataRequired(DataRequired):
+    def __init__(self, exclude_value, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.exclude_value = exclude_value
+
+    def __call__(self, form, field):
+        if form.file_type.data != self.exclude_value:
+            super().__call__(form, field)
 
 class UploadForm(FlaskForm):
-    file_type = RadioField('File Type', choices=[('csv', 'CSV'), ('pdf', 'PDF'), ('url', 'URL')], validators=[DataRequired()])
-    file = MultipleFileField('File', validators=[DataRequired()])
+    # file_type = RadioField('File Type', choices=[('csv', 'CSV'), ('pdf', 'PDF'), ('url', 'URL')], validators=[DataRequired()])
+    file_type = RadioField('File Type', choices=[('csv', 'CSV'), ('pdf', 'PDF'), ('url', 'URL'), ('default_pdf', 'Default PDF')], validators=[DataRequired()])
+    file = MultipleFileField('File', validators=[ConditionalDataRequired(exclude_value='default_pdf', message='File is required when not selecting a default PDF')])
+    # file = MultipleFileField('File', validators=[DataRequired()])
+    default_pdfs = SelectField('Default PDF Files', choices=[])
     submit = SubmitField('Upload')
 
 class FeedbackForm(FlaskForm):

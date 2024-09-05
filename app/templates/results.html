@@ -18,6 +18,17 @@
     </ul>
 </div>
 {% endif %}
+{% if skipped_urls and skipped_urls[0] %}
+<div class="error">
+    <h2>Skipped URLs:</h2>
+    <ul>
+        {% for url in skipped_urls %}
+        <li>{{ url }}</li>
+        {% endfor %}
+    </ul>
+    <p>These URLs were not processed because the maximum limit of 3 was reached. If you need to process more files, please contact the maker of this webapp: <a href="https://www.linkedin.com/in/vedansh-mahe">Vedansh Maheshwari on LinkedIn</a>.</p>
+</div>
+{% endif %}
 <div class="results-container">
     <hr class="custom-hr">
     <h1>Results</h1>
@@ -92,7 +103,9 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <script>
-    var data = {{ data|tojson }};
+    var jsonData = '{{ data|tojson|safe }}';
+    var data = JSON.parse(jsonData);
+
     function aggregateData(data, key) {
         const counts = {};
         data.forEach(item => {
@@ -327,7 +340,8 @@
     }).addTo(map);
 
     // Assuming `locations` is passed as a JSON object array
-    var locations = {{ locations|tojson | safe }};
+    var locationData = '{{ locations|tojson|safe }}';
+    var locations = JSON.parse(locationData);
     locations.forEach(function(location) {
         var lat = parseFloat(location.latitude);
         var lng = parseFloat(location.longitude);

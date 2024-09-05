@@ -23,6 +23,10 @@
                         <input type="radio" name="file_type" value="url" onchange="toggleInputFields()">
                         <span><i class="fas fa-link"></i> URL</span>
                     </label>
+                    <label class="radio-option">
+                        <input type="radio" name="file_type" value="default_pdf" onchange="toggleInputFields()">
+                        <span><i class="fas fa-file-pdf defpdf"></i> Default PDF</span>
+                    </label>
                 </div>
             </div>
             <div id="file-input-div" class="form-group" style="display: none;">
@@ -32,6 +36,10 @@
             <div id="url-input-div" class="form-group" style="display: none;">
                 <label for="url-input">Enter URLs (one per line):</label>
                 <textarea name="urls" id="url-input" class="form-control"></textarea>
+            </div>
+            <div id="default-pdf-div" class="form-group" style="display: none;">
+                <label for="default-pdfs">Select a Default PDF:</label>
+                {{ upload_form.default_pdfs(class="form-control") }}
             </div>
             <div class="form-group">
                 {{ upload_form.submit(class="btn btn-primary") }}
@@ -44,22 +52,27 @@
 <script>
     function toggleInputFields() {
         var fileType = document.querySelector('input[name="file_type"]:checked').value;
+        var fileInput = document.getElementById('file-input');
         var fileInputDiv = document.getElementById('file-input-div');
         var urlInputDiv = document.getElementById('url-input-div');
-        if (fileType === 'csv') {
+        var defaultPdfDiv = document.getElementById('default-pdf-div');
+        fileInputDiv.style.display = 'none';
+        urlInputDiv.style.display = 'none';
+        defaultPdfDiv.style.display = 'none';
+
+        if (fileType === 'csv' || fileType === 'pdf') {
             fileInputDiv.style.display = 'block';
-            urlInputDiv.style.display = 'none';
-            fileInputDiv.querySelector('label').textContent = 'Upload CSV File:';
-            fileInputDiv.querySelector('input[type="file"]').accept = '.csv';
-        } else if (fileType === 'pdf') {
-            fileInputDiv.style.display = 'block';
-            urlInputDiv.style.display = 'none';
-            fileInputDiv.querySelector('label').textContent = 'Upload PDF File:';
-            fileInputDiv.querySelector('input[type="file"]').accept = '.pdf';
+            fileInput.required = true; // Set the file input as required
+            fileInputDiv.querySelector('label').textContent = fileType === 'csv' ? 'Upload CSV File:' : 'Upload PDF File:';
+            fileInputDiv.querySelector('input[type="file"]').accept = fileType === 'csv' ? '.csv' : '.pdf';
         } else if (fileType === 'url') {
-            fileInputDiv.style.display = 'none';
             urlInputDiv.style.display = 'block';
+            fileInput.required = false; // Not required for URL entries
+        } else if (fileType === 'default_pdf') {
+            defaultPdfDiv.style.display = 'block';
+            fileInput.required = false; // Not required for default PDF selection
         }
     }
+</script>
 </script>
 {% endblock %}
