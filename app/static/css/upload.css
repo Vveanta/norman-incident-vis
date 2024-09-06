@@ -15,10 +15,22 @@
 }
 
 .upload-container h1,
-.upload-container h2 {
+.upload-container h2,
+.upload-container p {
     margin-bottom: 20px;
     color: #203129;
 }
+
+.text a {
+    color: #007bff; /* Link color */
+    text-decoration: none; /* Remove underline */
+}
+
+.text a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+
 
 .form-group {
     margin-bottom: 20px;

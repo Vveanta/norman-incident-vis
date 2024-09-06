@@ -18,7 +18,8 @@
             <h2 id="logo">NormanPD Incidents Visualizer </h2>
         </div>
         <nav id="navbar">
-            <ul>
+            <a class="toggle-nav" href="javascript:void(0);">&#9776;</a>
+            <ul class = "active">
                 <li class="nav-item"><a href="{{ url_for('main.index') }}" class="nav-link">Home</a></li>
                 <li class="nav-item"><a href="{{ url_for('main.feedback') }}" class="nav-link">Feedback</a></li>
                 <li class="nav-item"><a href="{{ url_for('main.upload') }}" class="nav-link special-btn">Use it Now</a></li>
@@ -28,5 +29,18 @@
     <div class="container">
         {% block content %}{% endblock %}
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var navToggle = document.querySelector('.toggle-nav');
+            navToggle.addEventListener('click', function () {
+                var navMenu = document.querySelector('#navbar ul');
+                if (navMenu.style.display === 'flex') {
+                    navMenu.style.display = 'none';
+                } else {
+                    navMenu.style.display = 'flex';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
