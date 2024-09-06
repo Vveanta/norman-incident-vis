@@ -47,6 +47,7 @@ app/ass2.py
 assignment2.py
 config.ini
 results.py
+db
 localtestpdf
 
 #other cache files

@@ -6,7 +6,7 @@ from .forms import URLForm, UploadForm, FeedbackForm
 from werkzeug.utils import secure_filename
 import os
 import pandas as pd
-from .utils import create_db, fetch_incidents, extract_incidents, populate_db, augment_data
+from .utils import create_db, fetch_incidents, extract_incidents, populate_db, augment_data,create_feedback_tables
 import urllib.error
 import urllib.parse
 import psycopg2
@@ -17,23 +17,6 @@ import configparser
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-
-# Database connection setup
-def get_db_connection():
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-
-    conn = psycopg2.connect(
-        dbname=config['database']['dbname'],
-        user=config['database']['user'],
-        password=config['database']['password'],
-        host=config['database']['host'],
-        port=config['database']['port']
-    )
-    return conn
-
 main = Blueprint('main', __name__)
 
 @main.route('/', methods=['GET'])
@@ -175,31 +158,34 @@ def feedback():
     logger.info("Entered feedback route")
 
     if request.method == 'POST' and feedback_form.validate_on_submit():
+        create_feedback_tables() 
         logger.info("Handling POST request and form validation")
         user_type = feedback_form.user_type.data # Assuming single selection for simplicity
         logger.info(f"Received user type from form: {user_type}")
-        # Get user_type_id from user_types table
-        conn = get_db_connection()
+        # Connect to SQLite database
+        conn = sqlite3.connect('resources/normanpd.db')
         cur = conn.cursor()
-        cur.execute(sql.SQL("SELECT id FROM user_types WHERE type = %s"), [user_type])
+        # Get user_type_id from user_types table
+        cur.execute("SELECT id FROM user_types WHERE type = ?", (user_type,))
         user_type_id = cur.fetchone()
 
         if user_type_id:
             # Prepare feedback data to be inserted
-            feedback_data = {
-                "name": feedback_form.name.data,
-                "email": feedback_form.email.data,
-                "user_type_id": user_type_id[0],
-                "rating": feedback_form.rating.data,
-                "feedback": feedback_form.feedback.data
-            }
+            # Prepare feedback data to be inserted
+            feedback_data = (
+                feedback_form.name.data,
+                feedback_form.email.data,
+                user_type_id[0],
+                feedback_form.rating.data,
+                feedback_form.feedback.data
+            )
             logger.info(f"Feedback data: {feedback_data}")
 
             # Insert feedback data into feedback table
-            cur.execute(sql.SQL("""
+            cur.execute('''
                 INSERT INTO feedback (name, email, user_type_id, rating, feedback)
-                VALUES (%s, %s, %s, %s, %s)
-            """), list(feedback_data.values()))
+                VALUES (?, ?, ?, ?, ?)
+            ''', feedback_data)
             conn.commit()
             cur.close()
             conn.close()

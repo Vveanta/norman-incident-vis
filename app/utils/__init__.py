@@ -1,5 +1,5 @@
 from .pdf_processing import fetch_incidents, extract_incidents
-from .database import create_db, populate_db
+from .database import create_db, populate_db,create_feedback_tables
 from .geocoding import geocode_address
 from .weather import fetch_weathercode_using_meteo
 from .side import calculate_angle,calculate_street_position
