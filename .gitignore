@@ -49,6 +49,11 @@ config.ini
 results.py
 db
 localtestpdf
+app/templates/processing.html
+app/utils/tasks.py
+celery_config.py
+config.py
+
 
 #other cache files
 .cache.sqlite

@@ -9,8 +9,8 @@ import pandas as pd
 from .utils import create_db, fetch_incidents, extract_incidents, populate_db, augment_data,create_feedback_tables
 import urllib.error
 import urllib.parse
-import psycopg2
-from psycopg2 import sql
+# import psycopg2
+# from psycopg2 import sql
 import configparser
 
 
