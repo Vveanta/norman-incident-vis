@@ -1,12 +1,21 @@
 import googlemaps
 import configparser
 import sqlite3
+import os
 
-# Read API key from config file
-config = configparser.ConfigParser()
-config.read('config.ini')
-api_key = config['google_maps']['GOOGLE_API_KEY']
+# # for local 
+# # Read API key from config file
+# config = configparser.ConfigParser()
+# config.read('config.ini')
+# api_key = config['google_maps']['GOOGLE_API_KEY']
+
+#for deployment server
+# Get API key from environment variables
+api_key = os.getenv('GOOGLE_API_KEY')
+if not api_key:
+    raise ValueError("No GOOGLE_API_KEY set for Flask application")
 gmaps = googlemaps.Client(key=api_key)
+
 
 # Global cache for geocoded locations
 # geocode_cache = {}
