@@ -13,31 +13,37 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
+          
       - name: Install pipenv and dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pipenv
-          pipenv install
-        
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
-
+          pipenv install --deploy --system  # This installs dependencies globally
+          
+      - name: Generate requirements.txt
+        run: |
+          pipenv lock -r > requirements.txt  # Generate requirements.txt from Pipfile.lock
+          
+      - name: Create startup command file
+        run: |
+          echo "gunicorn --bind=0.0.0.0 --timeout 600 run:app" > startup.sh
+          
       - name: Zip artifact for deployment
         run: zip -r release.zip ./* -x "*.venv/*"
-
+        
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
           path: release.zip
+
 
   deploy:
     runs-on: ubuntu-latest
