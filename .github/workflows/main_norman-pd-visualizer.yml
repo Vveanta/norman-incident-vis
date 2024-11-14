@@ -75,5 +75,5 @@ jobs:
         with:
           app-name: 'Norman-PD-Visualizer'
           slot-name: 'Production'
-          startup-command: 'cd /home/site/wwwroot && gunicorn --bind=0.0.0.0:8000 run:app'
+          
           
