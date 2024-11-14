@@ -24,6 +24,7 @@ python-dotenv = "*"
 email-validator = "*"
 plotly = "*"
 exceptiongroup = "*"
+gunicorn = "*"
 
 [dev-packages]
 
