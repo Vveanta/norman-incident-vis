@@ -43,16 +43,20 @@ pipenv install
 pipenv shell
 ```
 
-### Step 4: Configure `config.ini`
-Copy the example configuration file and update it with your actual Google Maps API key:
+### Step 4: Configure `.env`
+
+Copy the example environment file and update it with your actual Google Maps API key:
+
 ```bash
-cp config.example.ini config.ini
+cp .example_env .env
 ```
-Then, open `config.ini` and replace the placeholder with your API key:
-```ini
-[google_maps]
-GOOGLE_API_KEY = YOUR_ACTUAL_API_KEY_HERE
+
+Then, open `.env` and replace the placeholder with your API key:
+
+```env
+GOOGLE_API_KEY=YOUR_ACTUAL_API_KEY_HERE
 ```
+
 
 ### Step 5: Run the Flask Application
 Set up the environment and start the Flask server:
